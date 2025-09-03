@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impetus InfoSec Bot 🤖</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Impetus InfoSec Bot 🤖</h1>
+        <a href="{{ url_for('admin') }}" class="settings-link">⚙️</a>
+    </div>
+    <div id="chat-container">
+        <div id="chat"></div>
+        <div class="input-container">
+            <input type="text" id="query" placeholder="Type your InfoSec policy related question...">
+            <button onclick="sendQuery()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendQuery() {
+            const queryText = $('#query').val();
+            if (!queryText) return;
+            $('#query').val('');
+            $('#chat').append('<div class="message user">You: ' + queryText + '</div>');
+            $.ajax({
+                url: '/query',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ query_text: queryText }),
+                success: function(response) {
+                    $('#chat').append('<div class="message bot">Bot: ' + response.response + '</div>');
+                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                },
+                error: function(xhr, status, error) {
+                    $('#chat').append('<div class="message bot error">Error: Unable to get response. Please try again.</div>');
+                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
